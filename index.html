@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahana Sewing System - Premium Industrial & Home Sewing Solutions</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            ivory: '#FDFBF7',
+                            beige: '#F4EFE6',
+                            sand: '#E6DCCE',
+                            brown: '#8C6D53',
+                            dark: '#2D1E18',
+                            mahogany: '#4A3525',
+                            gold: '#C5A059',
+                            goldlight: '#EADBB6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js CDN for Owner Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background-color: #FDFBF7;
+            color: #2D1E18;
+            font-family: 'Inter', sans-serif;
+        }
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F4EFE6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8C6D53;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4A3525;
+        }
+        .glass-header {
+            background: rgba(253, 251, 247, 0.92);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-brand-sand selection:text-brand-dark">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-20 right-5 z-50 transform translate-x-full transition-transform duration-300 ease-in-out bg-brand-dark text-brand-ivory px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border-l-4 border-brand-gold max-w-md hidden">
+        <i id="toast-icon" class="fas fa-check-circle text-brand-gold text-xl"></i>
+        <div>
+            <p id="toast-title" class="font-semibold text-sm text-brand-goldlight">Notification</p>
+            <p id="toast-msg" class="text-xs text-stone-300">Action performed successfully.</p>
+        </div>
+        <button onclick="hideToast()" class="ml-auto text-stone-400 hover:text-white"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 glass-header border-b border-brand-sand/60 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-full bg-brand-dark text-brand-gold flex items-center justify-center font-bold text-xl shadow-md group-hover:scale-105 transition-transform">
+                        <i class="fas fa-cog fa-spin-hover"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl sm:text-2xl font-bold tracking-tight text-brand-dark serif block leading-tight">SAHANA</span>
+                        <span class="text-[10px] tracking-widest text-brand-brown uppercase font-semibold block">Sewing System</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium text-brand-mahogany">
+                    <a href="#home" class="hover:text-brand-brown transition-colors">Home</a>
+                    <a href="#catalogue" class="hover:text-brand-brown transition-colors">Machines</a>
+                    <a href="#spares" class="hover:text-brand-brown transition-colors">Spare Parts</a>
+                    <a href="#offers" class="hover:text-brand-brown transition-colors">Offers</a>
+                    <a href="#service" class="hover:text-brand-brown transition-colors">Services</a>
+                    <a href="#reviews" class="hover:text-brand-brown transition-colors">Reviews</a>
+                    <a href="#contact" class="hover:text-brand-brown transition-colors">Contact</a>
+                </nav>
+
+                <!-- Header Actions -->
+                <div class="flex items-center gap-3">
+                    <!-- Global Search Trigger -->
+                    <div class="relative hidden sm:block w-48 lg:w-64">
+                        <input type="text" id="nav-search-input" onkeyup="handleNavSearch(this.value)" placeholder="Search machines, spares..." class="w-full bg-brand-beige/70 border border-brand-sand rounded-full py-1.5 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-brown text-brand-dark placeholder-stone-400">
+                        <i class="fas fa-search absolute left-3 top-2.5 text-xs text-brand-brown"></i>
+                    </div>
+
+                    <!-- Cart / Inquiry Drawer Trigger -->
+                    <button onclick="toggleInquiryModal()" class="relative p-2.5 rounded-full text-brand-dark hover:bg-brand-beige transition-colors" title="View Enquiries">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                        <span id="cart-badge" class="absolute top-1 right-1 bg-brand-gold text-brand-dark text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+
+                    <!-- Owner Login / Portal Button -->
+                    <button id="portal-btn" onclick="openOwnerPortal()" class="bg-brand-dark hover:bg-brand-mahogany text-brand-ivory px-4 py-2 rounded-lg text-xs font-semibold tracking-wide uppercase shadow-md transition-all flex items-center gap-2">
+                        <i class="fas fa-user-shield text-brand-gold"></i>
+                        <span id="portal-btn-text">Owner Portal</span>
+                    </button>
+
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-brand-dark hover:bg-brand-beige focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-ivory border-b border-brand-sand px-4 pt-2 pb-6 space-y-3 shadow-lg">
+            <div class="pt-2 pb-3 border-b border-brand-sand">
+                <input type="text" onkeyup="handleNavSearch(this.value)" placeholder="Search machines, parts..." class="w-full bg-brand-beige border border-brand-sand rounded-lg py-2 px-3 text-sm focus:outline-none text-brand-dark">
+            </div>
+            <a href="#home" onclick="toggleMobileMenu()" class="block py-2 text-brand-dark font-medium hover:text-brand-brown">Home</a>
+            <a href="#catalogue" onclick="toggleMobileMenu()" class="block py-2 text-brand-dark font-medium hover:text-brand-brown">Sewing Machines</a>
+            <a href="#spares" onclick="toggleMobileMenu()" class="block py-2 text-brand-dark font-medium hover:text-brand-brown">Spare Parts & Accessories</a>
+            <a href="#offers" onclick="toggleMobileMenu()" class="block py-2 text-brand-dark font-medium hover:text-brand-brown">Special Offers</a>
+            <a href="#service" onclick="toggleMobileMenu()" class="block py-2 text-brand-dark font-medium hover:text-brand-brown">Repair & Service Booking</a>
+            <a href="#reviews" onclick="toggleMobileMenu()" class="block py-2 text-brand-dark font-medium hover:text-brand-brown">Customer Reviews</a>
+            <a href="#contact" onclick="toggleMobileMenu()" class="block py-2 text-brand-dark font-medium hover:text-brand-brown">Contact & Location</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        
+        <!-- HERO SECTION -->
+        <section id="home" class="relative bg-gradient-to-b from-brand-beige/50 via-brand-ivory to-brand-ivory pt-12 pb-20 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-sand/50 text-brand-dark text-xs font-semibold uppercase tracking-wider border border-brand-sand">
+                            <i class="fas fa-certificate text-brand-gold"></i> Authorized Sewing Machine Hub
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-brand-dark serif leading-tight">
+                            Crafting Perfection with <span class="text-brand-brown italic">Precision Engineering</span>
+                        </h1>
+                        <p class="text-stone-600 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                            Sahana Sewing System provides state-of-the-art Industrial Sewing Machines, versatile Home Electric & Manual models, genuine Spare Parts, and expert technician repair services.
+                        </p>
+                        
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                            <a href="#catalogue" class="bg-brand-brown hover:bg-brand-mahogany text-white px-7 py-3.5 rounded-xl font-medium text-sm shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+                                <i class="fas fa-th-list"></i> Explore Machines
+                            </a>
+                            <a href="#service" class="bg-brand-beige border border-brand-sand hover:bg-brand-sand/40 text-brand-dark px-7 py-3.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2">
+                                <i class="fas fa-wrench text-brand-brown"></i> Book Service
+                            </a>
+                            <a href="https://wa.me/919876543210?text=Hello%20Sahana%20Sewing%20System,%20I%20have%20an%20enquiry" target="_blank" class="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-3.5 rounded-xl font-medium text-sm shadow-md transition-all flex items-center gap-2">
+                                <i class="fab fa-whatsapp text-lg"></i> WhatsApp Quick Order
+                            </a>
+                        </div>
+
+                        <!-- Key Highlights -->
+                        <div class="grid grid-cols-3 gap-4 pt-8 border-t border-brand-sand/60">
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-bold text-brand-dark serif">100%</p>
+                                <p class="text-xs text-stone-500 font-medium">Genuine Machinery</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-bold text-brand-dark serif">25+</p>
+                                <p class="text-xs text-stone-500 font-medium">Top Global Brands</p>
+                            </div>
+                            <div>
+                                <p class="text-2xl sm:text-3xl font-bold text-brand-dark serif">Doorstep</p>
+                                <p class="text-xs text-stone-500 font-medium">Service & Parts Support</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero Banner Image Card -->
+                    <div class="lg:col-span-5 relative">
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-stone-100 group">
+                            <img src="/image/jack.jpg" onerror="this.onerror=null;this.src='jack.jpg';" alt="Sahana Sewing Machine Showcase" class="w-full h-[420px] object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-brand-dark/20 to-transparent flex flex-col justify-end p-6 text-white">
+                                <span class="bg-brand-gold text-brand-dark font-bold text-[10px] tracking-widest uppercase px-3 py-1 rounded-md w-max mb-2">Featured Workshop Hub</span>
+                                <h3 class="text-xl font-bold text-brand-ivory serif">High-Speed Direct Drive Lockstitch Machines</h3>
+                                <p class="text-xs text-stone-300 mt-1">Energy-saving motors with automatic thread trimmer, oil-free stitching heads & touch screen display.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- BRANDS STRIP -->
+        <section class="py-10 bg-brand-beige/60 border-y border-brand-sand/60 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <p class="text-center text-xs font-bold uppercase tracking-widest text-brand-brown mb-6">Authorized Dealer & Stockist for World-Class Brands</p>
+                <div class="flex flex-wrap items-center justify-center gap-6 md:gap-12 opacity-80 grayscale hover:grayscale-0 transition-all">
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">JUKI</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">JACK</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">USHA</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">SINGER</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">BROTHER</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">PFAFF</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">GEMSY</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">SIRUBA</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">TYPICAL</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">PEGASUS</span>
+                    <span class="font-extrabold text-xl text-stone-700 tracking-tighter hover:text-brand-dark cursor-pointer transition-colors">ZOJE</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEWING MACHINES CATALOGUE -->
+        <section id="catalogue" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-brand-dark serif">Sewing Machine Catalogue</h2>
+                    <p class="text-stone-600 text-sm mt-1">Browse our wide selection of industrial, domestic, electric, and special purpose machinery.</p>
+                </div>
+                <div class="text-xs text-stone-500 font-medium">
+                    Showing <span id="product-count-badge" class="font-bold text-brand-dark">0</span> items
+                </div>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="bg-brand-beige/50 border border-brand-sand rounded-2xl p-4 mb-8 shadow-sm space-y-4">
+                
+                <!-- Main Category Tabs -->
+                <div class="flex flex-wrap gap-2 border-b border-brand-sand/80 pb-3" id="category-tabs">
+                    <button onclick="filterCategory('All')" class="cat-tab active bg-brand-brown text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all">All Machines</button>
+                    <button onclick="filterCategory('Industrial')" class="cat-tab bg-white text-brand-dark hover:bg-brand-sand/40 border border-brand-sand px-4 py-2 rounded-xl text-xs font-semibold transition-all">Industrial Machines</button>
+                    <button onclick="filterCategory('Home-Manual')" class="cat-tab bg-white text-brand-dark hover:bg-brand-sand/40 border border-brand-sand px-4 py-2 rounded-xl text-xs font-semibold transition-all">Home: Manual / Pedal</button>
+                    <button onclick="filterCategory('Home-Electric')" class="cat-tab bg-white text-brand-dark hover:bg-brand-sand/40 border border-brand-sand px-4 py-2 rounded-xl text-xs font-semibold transition-all">Home: Electric / Power</button>
+                    <button onclick="filterCategory('Overlock')" class="cat-tab bg-white text-brand-dark hover:bg-brand-sand/40 border border-brand-sand px-4 py-2 rounded-xl text-xs font-semibold transition-all">Overlock & Interlock</button>
+                    <button onclick="filterCategory('Embroidery')" class="cat-tab bg-white text-brand-dark hover:bg-brand-sand/40 border border-brand-sand px-4 py-2 rounded-xl text-xs font-semibold transition-all">Embroidery</button>
+                    <button onclick="filterCategory('Special')" class="cat-tab bg-white text-brand-dark hover:bg-brand-sand/40 border border-brand-sand px-4 py-2 rounded-xl text-xs font-semibold transition-all">Special Purpose</button>
+                </div>
+
+                <!-- Secondary Filters: Search, Brand, Sort -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="relative">
+                        <input type="text" id="cat-search-input" onkeyup="renderProducts()" placeholder="Search by name or model..." class="w-full bg-white border border-brand-sand rounded-xl py-2 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-brown">
+                        <i class="fas fa-search absolute left-3 top-3 text-xs text-stone-400"></i>
+                    </div>
+
+                    <div>
+                        <select id="brand-filter" onchange="renderProducts()" class="w-full bg-white border border-brand-sand rounded-xl py-2 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-brown">
+                            <option value="All">All Brands</option>
+                            <option value="JUKI">JUKI</option>
+                            <option value="JACK">JACK</option>
+                            <option value="USHA">USHA</option>
+                            <option value="SINGER">SINGER</option>
+                            <option value="BROTHER">BROTHER</option>
+                            <option value="PFAFF">PFAFF</option>
+                            <option value="GEMSY">GEMSY</option>
+                            <option value="SIRUBA">SIRUBA</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <select id="sort-filter" onchange="renderProducts()" class="w-full bg-white border border-brand-sand rounded-xl py-2 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-brown">
+                            <option value="default">Sort by: Default</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Customer Rating</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Products Grid Container -->
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Injected via JavaScript -->
+            </div>
+            
+            <div id="no-products-msg" class="hidden text-center py-16 bg-brand-beige/30 rounded-2xl border border-dashed border-brand-sand my-6">
+                <i class="fas fa-box-open text-4xl text-brand-brown mb-3"></i>
+                <p class="text-stone-600 font-medium text-sm">No machines match your active filter or search query.</p>
+                <button onclick="resetFilters()" class="mt-3 text-xs text-brand-brown font-bold underline">Reset Filters</button>
+            </div>
+        </section>
+
+        <!-- SPECIAL OFFERS & DISCOUNTS -->
+        <section id="offers" class="py-16 bg-brand-mahogany text-brand-ivory relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <span class="text-brand-gold text-xs font-bold uppercase tracking-widest">Exclusive Deals</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold serif mt-1 text-white">Current Festival Discounts & Offers</h2>
+                    <p class="text-stone-300 text-sm mt-2">Take advantage of limited-time price reductions, combo kits, and warranty extensions.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="offers-container">
+                    <!-- Offer Card 1 -->
+                    <div class="bg-brand-dark/80 border border-brand-gold/30 rounded-2xl p-6 relative hover:border-brand-gold transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="bg-rose-600 text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full">Save 15%</span>
+                            <h3 class="text-xl font-bold mt-4 serif text-brand-goldlight">Jack Direct-Drive Super Combo</h3>
+                            <p class="text-stone-300 text-xs mt-2 leading-relaxed">Purchase any Jack A4B or A5E machine and get a free motor replacement guarantee + accessory attachment kit worth ₹2,500.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+                            <span class="text-xs text-stone-400">Valid till Month End</span>
+                            <button onclick="quickEnquire('Jack Direct-Drive Super Combo Offer')" class="text-xs bg-brand-gold text-brand-dark font-bold px-4 py-2 rounded-lg hover:bg-brand-goldlight transition-colors">Claim Offer</button>
+                        </div>
+                    </div>
+
+                    <!-- Offer Card 2 -->
+                    <div class="bg-brand-dark/80 border border-brand-gold/30 rounded-2xl p-6 relative hover:border-brand-gold transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="bg-emerald-600 text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full">Free Accessories</span>
+                            <h3 class="text-xl font-bold mt-4 serif text-brand-goldlight">Home Sewing Starter Pack</h3>
+                            <p class="text-stone-300 text-xs mt-2 leading-relaxed">Buy any USHA or SINGER domestic electric sewing machine and receive 50 Free bobbins, specialized needles & thread set.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+                            <span class="text-xs text-stone-400">Limited Stock</span>
+                            <button onclick="quickEnquire('Home Sewing Starter Pack Offer')" class="text-xs bg-brand-gold text-brand-dark font-bold px-4 py-2 rounded-lg hover:bg-brand-goldlight transition-colors">Claim Offer</button>
+                        </div>
+                    </div>
+
+                    <!-- Offer Card 3 -->
+                    <div class="bg-brand-dark/80 border border-brand-gold/30 rounded-2xl p-6 relative hover:border-brand-gold transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="bg-amber-600 text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full">Exchange Bonus</span>
+                            <h3 class="text-xl font-bold mt-4 serif text-brand-goldlight">Old Machine Exchange Offer</h3>
+                            <p class="text-stone-300 text-xs mt-2 leading-relaxed">Upgrade your old manual machine and get up to ₹3,000 instant discount on brand new Overlock or Heavy Duty machines.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+                            <span class="text-xs text-stone-400">In-Store Only</span>
+                            <button onclick="quickEnquire('Old Machine Exchange Offer')" class="text-xs bg-brand-gold text-brand-dark font-bold px-4 py-2 rounded-lg hover:bg-brand-goldlight transition-colors">Claim Offer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPARE PARTS & ACCESSORIES -->
+        <section id="spares" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <span class="text-brand-brown text-xs font-bold uppercase tracking-wider">Genuine Parts</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-brand-dark serif mt-1">Spare Parts & Accessories</h2>
+                    <p class="text-stone-600 text-sm mt-1">Precision bobbins, specialized presser feet, high-performance motors, and maintenance oils.</p>
+                </div>
+                <!-- Filter category for spares -->
+                <div class="flex gap-2">
+                    <button onclick="filterSpares('All')" class="spare-tab active text-xs font-bold bg-brand-brown text-white px-3 py-1.5 rounded-lg">All Parts</button>
+                    <button onclick="filterSpares('Needle')" class="spare-tab text-xs font-bold bg-brand-beige text-brand-dark px-3 py-1.5 rounded-lg border border-brand-sand">Needles & Bobbins</button>
+                    <button onclick="filterSpares('Motor')" class="spare-tab text-xs font-bold bg-brand-beige text-brand-dark px-3 py-1.5 rounded-lg border border-brand-sand">Motors & Oils</button>
+                    <button onclick="filterSpares('Feet')" class="spare-tab text-xs font-bold bg-brand-beige text-brand-dark px-3 py-1.5 rounded-lg border border-brand-sand">Presser Feet</button>
+                </div>
+            </div>
+
+            <!-- Spare Parts Grid -->
+            <div id="spares-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- REPAIR & SERVICE BOOKING SECTION -->
+        <section id="service" class="py-16 bg-brand-beige/50 border-y border-brand-sand/70">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    
+                    <div class="lg:col-span-5 space-y-4">
+                        <span class="text-brand-brown text-xs font-bold uppercase tracking-wider">Expert Technicians</span>
+                        <h2 class="text-3xl sm:text-4xl font-bold text-brand-dark serif">Book Machine Repair & Maintenance</h2>
+                        <p class="text-stone-600 text-sm leading-relaxed">
+                            Experiencing thread snapping, motor noise, timing issues, or uneven stitching? Our factory-trained mechanics provide both doorstep servicing and in-shop overhauls.
+                        </p>
+                        <ul class="space-y-3 pt-2 text-xs font-medium text-stone-700">
+                            <li class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-600"></i> Free Initial Diagnostic Inspection</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-600"></i> Genuine Spare Parts Replacement</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-600"></i> Doorstep Pickup and Delivery Options</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check-circle text-emerald-600"></i> Annual Maintenance Contracts (AMC) Available</li>
+                        </ul>
+                    </div>
+
+                    <div class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-2xl border border-brand-sand shadow-lg">
+                        <form id="service-booking-form" onsubmit="handleServiceSubmit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-brand-dark mb-1">Customer Full Name *</label>
+                                    <input type="text" id="srv-name" required class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none" placeholder="e.g. Rahul Sharma">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-brand-dark mb-1">Contact Phone Number *</label>
+                                    <input type="tel" id="srv-phone" required class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none" placeholder="e.g. +91 9876543210">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-brand-dark mb-1">Sewing Machine Type / Brand *</label>
+                                    <input type="text" id="srv-machine" required class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none" placeholder="e.g. Juki DDL-8700 Industrial">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-brand-dark mb-1">Service Preference</label>
+                                    <select id="srv-type" class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none">
+                                        <option value="Doorstep Service">Doorstep Technician Visit</option>
+                                        <option value="Workshop Drop-off">Bring to Sahana Workshop</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-brand-dark mb-1">Preferred Date</label>
+                                    <input type="date" id="srv-date" required class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-brand-dark mb-1">Service Urgency</label>
+                                    <select id="srv-urgency" class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none">
+                                        <option value="Normal">Normal (Within 24-48 Hours)</option>
+                                        <option value="Urgent">Urgent (Same Day Emergency)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-brand-dark mb-1">Describe Issue or Maintenance Requirement</label>
+                                <textarea id="srv-issue" rows="3" required class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none" placeholder="Describe problems like thread breakage, motor noise, timing slip..."></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-brand-brown hover:bg-brand-mahogany text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md transition-all">
+                                Submit Service Booking Request
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- REVIEWS & TESTIMONIALS -->
+        <section id="reviews" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                <div>
+                    <span class="text-brand-brown text-xs font-bold uppercase tracking-wider">Testimonials</span>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-brand-dark serif mt-1">What Our Customers Say</h2>
+                    <p class="text-stone-600 text-sm mt-1">Real feedback from garment factory owners, boutique designers, and tailors.</p>
+                </div>
+                <button onclick="toggleReviewModal()" class="bg-brand-beige border border-brand-sand hover:bg-brand-sand/40 text-brand-dark text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                    <i class="fas fa-pen text-brand-brown"></i> Write a Review
+                </button>
+            </div>
+
+            <!-- Reviews Grid -->
+            <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- CONTACT, LOCATION & SOCIAL MEDIA -->
+        <section id="contact" class="py-16 bg-brand-dark text-brand-ivory">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    
+                    <div class="lg:col-span-5 space-y-6">
+                        <div>
+                            <span class="text-brand-gold text-xs font-bold uppercase tracking-widest">Get In Touch</span>
+                            <h2 class="text-3xl font-bold serif text-brand-ivory mt-1">Sahana Sewing System</h2>
+                            <p class="text-stone-400 text-xs mt-2 leading-relaxed">Visit our main showroom and service station or contact us via phone or WhatsApp for instant sales quotes.</p>
+                        </div>
+
+                        <div class="space-y-4 text-xs">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-brand-mahogany flex items-center justify-center text-brand-gold shrink-0"><i class="fas fa-map-marker-alt"></i></div>
+                                <div>
+                                    <p class="font-bold text-brand-goldlight">Main Showroom Address</p>
+                                    <p class="text-stone-300">#45, Main Commercial Complex, Textile Market Road, Near City Bus Terminal, Tamil Nadu - 625001</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-brand-mahogany flex items-center justify-center text-brand-gold shrink-0"><i class="fas fa-phone-alt"></i></div>
+                                <div>
+                                    <p class="font-bold text-brand-goldlight">Customer Hotline & Support</p>
+                                    <p class="text-stone-300">+91 98765 43210 / +91 0452 2345678</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-brand-mahogany flex items-center justify-center text-brand-gold shrink-0"><i class="fab fa-whatsapp"></i></div>
+                                <div>
+                                    <p class="font-bold text-brand-goldlight">WhatsApp Sales Desk</p>
+                                    <p class="text-stone-300">+91 98765 43210 (24/7 Inquiry)</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-brand-mahogany flex items-center justify-center text-brand-gold shrink-0"><i class="fas fa-clock"></i></div>
+                                <div>
+                                    <p class="font-bold text-brand-goldlight">Store Timings</p>
+                                    <p class="text-stone-300">Monday - Saturday: 9:00 AM - 8:30 PM | Sunday: Closed</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Links -->
+                        <div class="pt-4 border-t border-brand-mahogany">
+                            <p class="text-xs font-bold text-brand-goldlight mb-3">Connect With Us</p>
+                            <div class="flex items-center gap-3">
+                                <a href="https://instagram.com" target="_blank" class="w-9 h-9 rounded-full bg-brand-mahogany hover:bg-brand-gold hover:text-brand-dark flex items-center justify-center text-stone-300 transition-colors"><i class="fab fa-instagram"></i></a>
+                                <a href="https://facebook.com" target="_blank" class="w-9 h-9 rounded-full bg-brand-mahogany hover:bg-brand-gold hover:text-brand-dark flex items-center justify-center text-stone-300 transition-colors"><i class="fab fa-facebook-f"></i></a>
+                                <a href="https://youtube.com" target="_blank" class="w-9 h-9 rounded-full bg-brand-mahogany hover:bg-brand-gold hover:text-brand-dark flex items-center justify-center text-stone-300 transition-colors"><i class="fab fa-youtube"></i></a>
+                                <a href="https://wa.me/919876543210" target="_blank" class="w-9 h-9 rounded-full bg-emerald-700 hover:bg-emerald-600 flex items-center justify-center text-white transition-colors"><i class="fab fa-whatsapp"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map & Direct Message Form -->
+                    <div class="lg:col-span-7 bg-brand-mahogany/80 p-6 rounded-2xl border border-brand-gold/20 flex flex-col justify-between space-y-6">
+                        <!-- Embedded Interactive Google Map Mockup -->
+                        <div class="relative w-full h-56 rounded-xl overflow-hidden border border-brand-gold/30 bg-stone-800 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80" alt="Map Location" class="w-full h-full object-cover opacity-50">
+                            <div class="absolute inset-0 bg-brand-dark/40 flex flex-col items-center justify-center p-4 text-center">
+                                <i class="fas fa-map-marked-alt text-3xl text-brand-gold mb-2"></i>
+                                <p class="text-xs font-bold text-white">Sahana Sewing System Main Hub</p>
+                                <p class="text-[11px] text-stone-300">Textile Market Road, Tamil Nadu</p>
+                                <a href="https://maps.google.com" target="_blank" class="mt-3 bg-brand-gold text-brand-dark px-3 py-1.5 rounded-md text-[11px] font-bold hover:bg-white transition-colors">Open in Google Maps</a>
+                            </div>
+                        </div>
+
+                        <!-- Direct Message Box -->
+                        <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-3">
+                            <h3 class="text-sm font-bold text-brand-gold">Send Direct Message to Store Manager</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <input type="text" id="cnt-name" required placeholder="Your Name" class="bg-brand-dark border border-stone-700 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-gold">
+                                <input type="tel" id="cnt-phone" required placeholder="Your Phone Number" class="bg-brand-dark border border-stone-700 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-gold">
+                            </div>
+                            <textarea id="cnt-msg" rows="2" required placeholder="Type your message or inquiry..." class="w-full bg-brand-dark border border-stone-700 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:border-brand-gold"></textarea>
+                            <button type="submit" class="w-full bg-brand-gold text-brand-dark py-2.5 rounded-lg text-xs font-bold uppercase tracking-wide hover:bg-brand-goldlight transition-colors">Send Message</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-dark border-t border-stone-800 py-6 text-center text-xs text-stone-400">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© 2026 Sahana Sewing System. All Rights Reserved.</p>
+            <p class="text-stone-500">Authorized Industrial & Domestic Sewing Machines Dealer</p>
+        </div>
+    </footer>
+
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <a href="https://wa.me/919876543210?text=Hello%20Sahana%20Sewing%20System,%20I%20want%20to%20inquire%20about%20machines" target="_blank" class="fixed bottom-6 right-6 z-40 bg-emerald-600 hover:bg-emerald-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform transform hover:scale-110" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="product-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-brand-sand relative animate-fade-in">
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center z-10"><i class="fas fa-times"></i></button>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 p-6 gap-6">
+                <div class="space-y-3">
+                    <div class="rounded-2xl overflow-hidden bg-brand-beige border border-brand-sand h-64 sm:h-80 flex items-center justify-center">
+                        <img id="modal-img" src="" alt="Product Detail" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-stone-500 px-1">
+                        <span>Brand: <strong id="modal-brand" class="text-brand-dark"></strong></span>
+                        <span>Model: <strong id="modal-model" class="text-brand-dark"></strong></span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col justify-between space-y-4">
+                    <div>
+                        <span id="modal-cat-badge" class="bg-brand-sand/60 text-brand-dark text-[10px] font-bold uppercase px-2.5 py-1 rounded-md"></span>
+                        <h3 id="modal-title" class="text-2xl font-bold text-brand-dark serif mt-2"></h3>
+                        
+                        <div class="flex items-center gap-3 mt-3">
+                            <span id="modal-price" class="text-2xl font-bold text-brand-brown"></span>
+                            <span id="modal-old-price" class="text-sm text-stone-400 line-through"></span>
+                            <span id="modal-discount" class="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold"></span>
+                        </div>
+
+                        <!-- Customer Stock View Mask -->
+                        <div class="mt-2 text-xs flex items-center gap-2 text-emerald-700 font-semibold">
+                            <i class="fas fa-check-circle"></i> In Stock (Ready for Immediate Delivery)
+                        </div>
+
+                        <div class="mt-4 border-t border-brand-sand pt-3">
+                            <p class="text-xs font-bold text-brand-dark uppercase tracking-wider mb-2">Key Specifications & Features</p>
+                            <p id="modal-desc" class="text-xs text-stone-600 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-brand-sand">
+                        <button id="modal-inquire-btn" class="w-full bg-brand-brown hover:bg-brand-mahogany text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-bookmark"></i> Book / Request Quote
+                        </button>
+                        <a id="modal-wa-btn" href="#" target="_blank" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2">
+                            <i class="fab fa-whatsapp text-sm"></i> Order via WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENQUIRY / BOOKINGS DRAWER MODAL -->
+    <div id="inquiry-modal" class="fixed inset-0 z-50 bg-black/50 hidden flex justify-end">
+        <div class="bg-brand-ivory w-full max-w-md h-full shadow-2xl p-6 overflow-y-auto flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between border-b border-brand-sand pb-4 mb-4">
+                    <h3 class="text-lg font-bold text-brand-dark serif flex items-center gap-2">
+                        <i class="fas fa-clipboard-list text-brand-brown"></i> Your Booking Enquiries
+                    </h3>
+                    <button onclick="toggleInquiryModal()" class="text-stone-400 hover:text-stone-700"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div id="inquiry-cart-list" class="space-y-3">
+                    <!-- Dynamic cart items injected here -->
+                </div>
+            </div>
+
+            <div class="border-t border-brand-sand pt-4 space-y-3">
+                <button onclick="submitCartEnquiry()" id="submit-cart-btn" class="w-full bg-brand-brown hover:bg-brand-mahogany text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider">
+                    Submit All Enquiries to Store Manager
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WRITE REVIEW MODAL -->
+    <div id="review-modal" class="fixed inset-0 z-50 bg-black/60 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-brand-sand space-y-4">
+            <div class="flex items-center justify-between border-b border-brand-sand pb-3">
+                <h3 class="text-base font-bold text-brand-dark serif">Write Customer Review</h3>
+                <button onclick="toggleReviewModal()" class="text-stone-400 hover:text-stone-700"><i class="fas fa-times"></i></button>
+            </div>
+
+            <form id="write-review-form" onsubmit="handleReviewSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-brand-dark mb-1">Your Full Name</label>
+                    <input type="text" id="rev-author" required class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-brand-dark mb-1">Purchased Machine / Product</label>
+                    <input type="text" id="rev-product" required class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none" placeholder="e.g. Juki DDL-8700">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-brand-dark mb-1">Rating (1 to 5 Stars)</label>
+                    <select id="rev-rating" class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none">
+                        <option value="5">5 Stars (Excellent)</option>
+                        <option value="4">4 Stars (Good)</option>
+                        <option value="3">3 Stars (Average)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-brand-dark mb-1">Your Feedback & Review</label>
+                    <textarea id="rev-text" rows="3" required class="w-full bg-brand-ivory border border-brand-sand rounded-xl py-2 px-3 text-xs focus:ring-2 focus:ring-brand-brown focus:outline-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-brand-brown text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- OWNER LOGIN MODAL -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-brand-ivory rounded-3xl max-w-md w-full p-8 shadow-2xl border border-brand-gold/30 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-full bg-brand-dark text-brand-gold flex items-center justify-center mx-auto text-xl shadow-md">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-brand-dark serif">Owner Portal Login</h3>
+                <p class="text-xs text-stone-500">Authorized personnel access to sales, stock, and private financials.</p>
+            </div>
+
+            <form onsubmit="handleOwnerLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-brand-dark mb-1">Owner Access Password</label>
+                    <input type="password" id="owner-pass-input" required class="w-full bg-white border border-brand-sand rounded-xl py-2.5 px-3 text-sm focus:ring-2 focus:ring-brand-brown focus:outline-none" placeholder="Enter password (default: admin123)">
+                </div>
+
+                <div class="bg-brand-sand/30 p-3 rounded-xl border border-brand-sand text-[11px] text-stone-600 flex justify-between items-center">
+                    <span>Default passcode: <strong class="text-brand-dark">admin123</strong></span>
+                    <button type="button" onclick="bypassLogin()" class="text-brand-brown font-bold underline">Quick Access</button>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-dark hover:bg-brand-mahogany text-brand-gold py-3 rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg transition-all">
+                    Unlock Dashboard
+                </button>
+            </form>
+
+            <button onclick="closeLoginModal()" class="w-full text-center text-xs text-stone-400 hover:text-stone-600">Cancel & Return to Shop</button>
+        </div>
+    </div>
+
+    <!-- OWNER MANAGEMENT DASHBOARD MODAL (FULL SCREEN) -->
+    <div id="dashboard-modal" class="fixed inset-0 z-50 bg-stone-900/95 backdrop-blur-md hidden overflow-y-auto">
+        <div class="min-h-screen bg-stone-950 text-stone-100 p-4 sm:p-6 lg:p-8">
+            
+            <!-- Dashboard Header Navigation -->
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-stone-800 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-gold text-stone-950 flex items-center justify-center font-bold text-xl">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white serif">Sahana Management Portal</h2>
+                        <p class="text-xs text-stone-400">Private Business Control Panel & Financial Analytics</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800/50 px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Owner Session Active
+                    </span>
+                    <button onclick="logoutOwner()" class="bg-rose-900/60 hover:bg-rose-800 text-rose-200 border border-rose-700/50 px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2">
+                        <i class="fas fa-sign-out-alt"></i> Exit Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto mt-6 space-y-8">
+                
+                <!-- KPI METRICS OVERVIEW -->
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+                        <p class="text-[11px] text-stone-400 font-semibold">Total Machine Stock</p>
+                        <p id="kpi-machine-stock" class="text-xl font-bold text-brand-gold mt-1">0</p>
+                    </div>
+
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+                        <p class="text-[11px] text-stone-400 font-semibold">Spare Parts Stock</p>
+                        <p id="kpi-spare-stock" class="text-xl font-bold text-emerald-400 mt-1">0</p>
+                    </div>
+
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+                        <p class="text-[11px] text-stone-400 font-semibold">Total Revenue</p>
+                        <p id="kpi-revenue" class="text-xl font-bold text-white mt-1">₹0</p>
+                    </div>
+
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+                        <p class="text-[11px] text-stone-400 font-semibold">Net Profit</p>
+                        <p id="kpi-profit" class="text-xl font-bold text-emerald-300 mt-1">₹0</p>
+                    </div>
+
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+                        <p class="text-[11px] text-stone-400 font-semibold">Pending Enquiries</p>
+                        <p id="kpi-enquiries" class="text-xl font-bold text-amber-400 mt-1">0</p>
+                    </div>
+
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+                        <p class="text-[11px] text-stone-400 font-semibold">Pending Repairs</p>
+                        <p id="kpi-repairs" class="text-xl font-bold text-sky-400 mt-1">0</p>
+                    </div>
+
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4">
+                        <p class="text-[11px] text-stone-400 font-semibold">Low Stock Alerts</p>
+                        <p id="kpi-lowstock" class="text-xl font-bold text-rose-400 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- ANALYTICS CHARTS SECTION -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-5">
+                        <h3 class="text-sm font-bold text-stone-300 mb-4 flex items-center gap-2">
+                            <i class="fas fa-chart-bar text-brand-gold"></i> Monthly Revenue & Profit Breakdown
+                        </h3>
+                        <div class="h-64">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-5">
+                        <h3 class="text-sm font-bold text-stone-300 mb-4 flex items-center gap-2">
+                            <i class="fas fa-chart-pie text-brand-gold"></i> Brand-wise Stock Distribution
+                        </h3>
+                        <div class="h-64 flex justify-center">
+                            <canvas id="brandChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCT & SPARE MANAGEMENT TABS -->
+                <div class="bg-stone-900 border border-stone-800 rounded-2xl p-6 space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-stone-800 pb-4 gap-4">
+                        <div class="flex items-center gap-4">
+                            <h3 class="text-lg font-bold text-white serif">Inventory & Pricing Control</h3>
+                            <span class="text-xs text-stone-500">(Private: Costs & Quantities visible to Owner)</span>
+                        </div>
+                        <button onclick="openAddProductModal()" class="bg-brand-gold text-stone-950 font-bold px-4 py-2 rounded-xl text-xs hover:bg-white transition-colors flex items-center gap-2">
+                            <i class="fas fa-plus"></i> Add New Product
+                        </button>
+                    </div>
+
+                    <!-- Products CRUD Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-stone-300">
+                            <thead class="bg-stone-950 text-stone-400 font-semibold uppercase tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-4">Item Name</th>
+                                    <th class="py-3 px-4">Brand / Model</th>
+                                    <th class="py-3 px-4">Category</th>
+                                    <th class="py-3 px-4">Stock Qty</th>
+                                    <th class="py-3 px-4">Cost Price (₹)</th>
+                                    <th class="py-3 px-4">Selling Price (₹)</th>
+                                    <th class="py-3 px-4">Margin (₹)</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="owner-products-tbody" class="divide-y divide-stone-800">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CUSTOMER ENQUIRIES & REPAIR BOOKINGS MANAGEMENT -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Enquiries Panel -->
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-6 space-y-4">
+                        <h3 class="text-base font-bold text-white serif flex items-center gap-2">
+                            <i class="fas fa-envelope text-amber-400"></i> Customer Product Enquiries
+                        </h3>
+                        <div class="overflow-x-auto max-h-80 overflow-y-auto">
+                            <table class="w-full text-xs text-stone-300">
+                                <thead class="bg-stone-950 text-stone-400">
+                                    <tr>
+                                        <th class="py-2 px-3 text-left">Customer</th>
+                                        <th class="py-2 px-3 text-left">Items / Msg</th>
+                                        <th class="py-2 px-3 text-left">Status</th>
+                                        <th class="py-2 px-3 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="owner-enquiries-tbody" class="divide-y divide-stone-800">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Service Bookings Panel -->
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-6 space-y-4">
+                        <h3 class="text-base font-bold text-white serif flex items-center gap-2">
+                            <i class="fas fa-wrench text-sky-400"></i> Repair Service Bookings
+                        </h3>
+                        <div class="overflow-x-auto max-h-80 overflow-y-auto">
+                            <table class="w-full text-xs text-stone-300">
+                                <thead class="bg-stone-950 text-stone-400">
+                                    <tr>
+                                        <th class="py-2 px-3 text-left">Customer</th>
+                                        <th class="py-2 px-3 text-left">Machine & Issue</th>
+                                        <th class="py-2 px-3 text-left">Date</th>
+                                        <th class="py-2 px-3 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="owner-repairs-tbody" class="divide-y divide-stone-800">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- OWNER ADD/EDIT PRODUCT MODAL -->
+    <div id="add-product-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex items-center justify-center p-4">
+        <div class="bg-stone-900 border border-stone-700 rounded-2xl max-w-lg w-full p-6 text-stone-100 space-y-4">
+            <div class="flex items-center justify-between border-b border-stone-800 pb-3">
+                <h3 id="add-modal-title" class="text-base font-bold text-brand-gold">Add New Product to Catalog</h3>
+                <button onclick="closeAddProductModal()" class="text-stone-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+
+            <form id="add-product-form" onsubmit="handleSaveProduct(event)" class="space-y-3">
+                <input type="hidden" id="edit-prod-id">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Product Title</label>
+                        <input type="text" id="prod-form-title" required class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Brand Name</label>
+                        <input type="text" id="prod-form-brand" required placeholder="e.g. JUKI, JACK, USHA" class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Model Number</label>
+                        <input type="text" id="prod-form-model" required class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Category</label>
+                        <select id="prod-form-cat" class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white">
+                            <option value="Industrial">Industrial Machine</option>
+                            <option value="Home-Manual">Home: Pedal / Manual</option>
+                            <option value="Home-Electric">Home: Electric / Power</option>
+                            <option value="Overlock">Overlock & Flatlock</option>
+                            <option value="Embroidery">Embroidery Machine</option>
+                            <option value="Special">Special Purpose</option>
+                            <option value="Spare">Spare Part / Accessory</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Cost Price (₹)</label>
+                        <input type="number" id="prod-form-cost" required class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Selling Price (₹)</label>
+                        <input type="number" id="prod-form-price" required class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-stone-400 mb-1">Stock Quantity</label>
+                        <input type="number" id="prod-form-stock" required class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] text-stone-400 mb-1">Image URL (Unsplash / Open Source)</label>
+                    <input type="url" id="prod-form-img" required class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white" placeholder="https://images.unsplash.com/...">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] text-stone-400 mb-1">Description & Specs</label>
+                    <textarea id="prod-form-desc" rows="2" required class="w-full bg-stone-950 border border-stone-700 rounded-lg p-2 text-xs text-white"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-gold text-stone-950 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider">Save Product</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Initial Dummy Seed Data with High Quality Sewing Photography
+        const initialProducts = [
+            {
+                id: 'p1',
+                title: 'JUKI DDL-8700 Single Needle Lockstitch',
+                brand: 'JUKI',
+                model: 'DDL-8700',
+                category: 'Industrial',
+                price: 28500,
+                costPrice: 22000,
+                oldPrice: 32000,
+                stock: 12,
+                rating: 4.9,
+                img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80',
+                desc: 'High-speed 5,500 sti/min single needle lockstitch industrial sewing machine suitable for light to medium fabrics. Features auto-lubrication and whisper-quiet servo motor.'
+            },
+            {
+                id: 'p2',
+                title: 'Jack A4B Computerized Lockstitch',
+                brand: 'JACK',
+                model: 'A4B-A',
+                category: 'Industrial',
+                price: 34000,
+                costPrice: 27000,
+                oldPrice: 38000,
+                stock: 8,
+                rating: 4.8,
+                img: 'https://images.unsplash.com/photo-1528458876861-544fd1761a91?auto=format&fit=crop&w=800&q=80',
+                desc: 'Direct-drive automatic thread trimmer lockstitch machine with German-designed voice guide speaker, digital thread tensioner, and heavy-duty feeding system.'
+            },
+            {
+                id: 'p3',
+                title: 'Usha Janome Wonder Stitch Electric',
+                brand: 'USHA',
+                model: 'Wonder Stitch Plus',
+                category: 'Home-Electric',
+                price: 16200,
+                costPrice: 12500,
+                oldPrice: 18500,
+                stock: 15,
+                rating: 4.7,
+                img: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?auto=format&fit=crop&w=800&q=80',
+                desc: 'Automatic zig-zag home sewing machine with 21 built-in stitch functions, drop feed for freehand embroidery, triple strength stitch, and circular sewing capabilities.'
+            },
+            {
+                id: 'p4',
+                title: 'Singer Heavy Duty 4423 Power Sewing Machine',
+                brand: 'SINGER',
+                model: 'HD-4423',
+                category: 'Home-Electric',
+                price: 19800,
+                costPrice: 15000,
+                oldPrice: 22000,
+                stock: 6,
+                rating: 4.9,
+                img: 'https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=800&q=80',
+                desc: 'Extra-high speed motor with heavy duty metal frame and stainless steel bedplate. Pierces thick denim, leather, and multiple canvas layers effortlessly.'
+            },
+            {
+                id: 'p5',
+                title: 'Siruba 747F 4-Thread Overlock Machine',
+                brand: 'SIRUBA',
+                model: '747F-514M2-24',
+                category: 'Overlock',
+                price: 38500,
+                costPrice: 30000,
+                oldPrice: 42000,
+                stock: 4,
+                rating: 4.8,
+                img: 'https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?auto=format&fit=crop&w=800&q=80',
+                desc: 'High-speed 4-thread overlock safety stitch machine with direct-drive motor, LED workspace illumination, and edge trimming blade.'
+            },
+            {
+                id: 'p6',
+                title: 'Usha Traditional Tailor Deluxe Pedal Machine',
+                brand: 'USHA',
+                model: 'Tailor Deluxe Stand',
+                category: 'Home-Manual',
+                price: 9500,
+                costPrice: 7200,
+                oldPrice: 11000,
+                stock: 20,
+                rating: 4.6,
+                img: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80',
+                desc: 'Classic cast-iron body manual sewing machine with heavy duty pedal stand and wooden table top. Highly durable for home and boutique tailoring.'
+            },
+            {
+                id: 'p7',
+                title: 'Brother S-7250A Direct Drive Lockstitch',
+                brand: 'BROTHER',
+                model: 'S-7250A-403',
+                category: 'Industrial',
+                price: 42000,
+                costPrice: 34000,
+                oldPrice: 46000,
+                stock: 3,
+                rating: 5.0,
+                img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
+                desc: 'Electronic feeding system Digiflex Feed equipped lockstitch machine. Prevents fabric pucker and needle breakage on sheer or thick fabrics.'
+            },
+            {
+                id: 'p8',
+                title: 'Pfaff Creative 1.5 Embroidery & Sewing Combo',
+                brand: 'PFAFF',
+                model: 'Creative 1.5',
+                category: 'Embroidery',
+                price: 85000,
+                costPrice: 68000,
+                oldPrice: 92000,
+                stock: 2,
+                rating: 4.9,
+                img: 'juki.jpg',
+                desc: 'Computerized sewing and embroidery machine featuring IDT Original system, large embroidery area, computer software included, and 150 built-in designs.'
+            }
+        ];
+
+        const defaultSpares = [
+    { name: "Organ Needle Set (100 pcs)", price: 450, image: "needle.jpg" },
+    { name: "Aluminum Bobbins (Pack of 50)", price: 350, image: "bobbin.jpg" },
+    { name: "Industrial Machine Oil (1L)", price: 280, image: "oil.jpg" },
+    { name: "Zipper Presser Foot Set", price: 600, image: "presser foot.jpg" }
+];
+        
+
+        const initialReviews = [
+            { author: 'Meenakshi Sundaram', product: 'JUKI DDL-8700', rating: 5, date: '2 days ago', text: 'Purchased 5 units for our export garment unit in Madurai. Excellent performance, smooth stitching, and prompt installation by Sahana technicians.' },
+            { author: 'Kavitha Boutique', product: 'Usha Wonder Stitch', rating: 5, date: '1 week ago', text: 'The home electric machine is super versatile! Sahana Sewing System gave me a great festival discount along with free accessory threads.' },
+            { author: 'Ramesh Kumar', product: 'Jack A4B Computerized', rating: 5, date: '2 weeks ago', text: 'The direct drive servo motor saves so much electricity. Noise level is almost zero. Highly recommend Sahana for authentic machinery.' }
+        ];
+
+        // Global State
+        let products = JSON.parse(localStorage.getItem('sss_products')) || initialProducts;
+        let spares = JSON.parse(localStorage.getItem('sss_spares')) || initialSpares;
+        let reviews = JSON.parse(localStorage.getItem('sss_reviews')) || initialReviews;
+        let enquiries = JSON.parse(localStorage.getItem('sss_enquiries')) || [
+            { id: 'e1', name: 'Senthil Nathan', phone: '9842112345', item: 'JUKI DDL-8700 (Qty: 2)', date: '2026-11-05', status: 'Pending' }
+        ];
+        let serviceBookings = JSON.parse(localStorage.getItem('sss_repairs')) || [
+            { id: 'r1', name: 'Lakshmi Garments', phone: '9789012345', machine: 'Siruba Overlock', issue: 'Needle thread timing slip & oil leak', date: '2026-11-07', type: 'Doorstep Visit', status: 'Pending' }
+        ];
+        
+        let cartEnquiries = [];
+        let currentCategory = 'All';
+        let currentSpareCategory = 'All';
+        let ownerSessionActive = false;
+        let chartInstance = null;
+        let brandChartInstance = null;
+
+        // Initialize App
+        window.onload = function() {
+            renderProducts();
+            renderSpares();
+            renderReviews();
+            updateCartBadge();
+            
+            // Auto sync to localStorage
+            saveToStorage();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('sss_products', JSON.stringify(products));
+            localStorage.setItem('sss_spares', JSON.stringify(spares));
+            localStorage.setItem('sss_reviews', JSON.stringify(reviews));
+            localStorage.setItem('sss_enquiries', JSON.stringify(enquiries));
+            localStorage.setItem('sss_repairs', JSON.stringify(serviceBookings));
+        }
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const searchVal = document.getElementById('cat-search-input').value.toLowerCase();
+            const brandVal = document.getElementById('brand-filter').value;
+            const sortVal = document.getElementById('sort-filter').value;
+            const noMsg = document.getElementById('no-products-msg');
+
+            let filtered = products.filter(p => {
+                const matchesCat = (currentCategory === 'All') || (p.category === currentCategory);
+                const matchesBrand = (brandVal === 'All') || (p.brand === brandVal);
+                const matchesSearch = p.title.toLowerCase().includes(searchVal) || p.model.toLowerCase().includes(searchVal) || p.brand.toLowerCase().includes(searchVal);
+                return matchesCat && matchesBrand && matchesSearch;
+            });
+
+            // Sorting
+            if (sortVal === 'price-low') filtered.sort((a,b) => a.price - b.price);
+            if (sortVal === 'price-high') filtered.sort((a,b) => b.price - a.price);
+            if (sortVal === 'rating') filtered.sort((a,b) => b.rating - a.rating);
+
+            document.getElementById('product-count-badge').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noMsg.classList.remove('hidden');
+                return;
+            } else {
+                noMsg.classList.add('hidden');
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-2xl border border-brand-sand overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="relative h-48 bg-brand-beige/40 overflow-hidden">
+                            <img src="${p.img}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/F4EFE6/8C6D53?text=Sewing+Machine';" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute top-3 left-3 bg-brand-dark/90 text-brand-gold text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md">${p.brand}</span>
+                            <span class="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">In Stock</span>
+                        </div>
+
+                        <div class="p-4 space-y-2">
+                            <div class="flex items-center justify-between text-[11px] text-stone-500">
+                                <span>Model: ${p.model}</span>
+                                <span class="text-amber-500 font-bold"><i class="fas fa-star"></i> ${p.rating}</span>
+                            </div>
+
+                            <h3 class="font-bold text-sm text-brand-dark line-clamp-1 group-hover:text-brand-brown transition-colors">${p.title}</h3>
+                            <p class="text-xs text-stone-500 line-clamp-2 leading-relaxed">${p.desc}</p>
+                            
+                            <div class="pt-2 flex items-baseline gap-2">
+                                <span class="text-lg font-bold text-brand-dark">₹${p.price.toLocaleString()}</span>
+                                ${p.oldPrice ? `<span class="text-xs text-stone-400 line-through">₹${p.oldPrice.toLocaleString()}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 pt-0 space-y-2">
+                        <button onclick="openProductModal('${p.id}')" class="w-full bg-brand-beige hover:bg-brand-sand/50 text-brand-dark py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 border border-brand-sand">
+                            <i class="fas fa-eye text-brand-brown"></i> View Specifications
+                        </button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="addToEnquiryCart('${p.id}')" class="bg-brand-brown hover:bg-brand-mahogany text-white py-2 rounded-xl text-xs font-bold transition-colors">
+                                Book Now
+                            </button>
+                            <a href="https://wa.me/919876543210?text=Hello%20Sahana%20Sewing,%20I%20am%20interested%20in%20${encodeURIComponent(p.title)}%20(${p.model})" target="_blank" class="bg-emerald-700 hover:bg-emerald-800 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1">
+                                <i class="fab fa-whatsapp"></i> Chat
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-tab').forEach(tab => {
+                tab.classList.remove('bg-brand-brown', 'text-white');
+                tab.classList.add('bg-white', 'text-brand-dark');
+            });
+            event.target.classList.remove('bg-white', 'text-brand-dark');
+            event.target.classList.add('bg-brand-brown', 'text-white');
+            renderProducts();
+        }
+
+        function renderSpares() {
+            const grid = document.getElementById('spares-grid');
+            let filtered = spares;
+            if (currentSpareCategory !== 'All') {
+                filtered = spares.filter(s => s.category === currentSpareCategory);
+            }
+
+            grid.innerHTML = filtered.map(s => `
+                <div class="bg-white border border-brand-sand rounded-xl p-3 flex flex-col justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <img src="${s.img}" onerror="this.onerror=null;this.src='https://placehold.co/400x300/F4EFE6/8C6D53?text=Spare+Part';" alt="${s.name}" class="w-full h-24 object-cover rounded-lg mb-2">
+                        <span class="text-[9px] font-bold uppercase text-brand-brown bg-brand-sand/30 px-1.5 py-0.5 rounded">${s.category}</span>
+                        <h4 class="text-xs font-bold text-brand-dark mt-1 line-clamp-2">${s.name}</h4>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-brand-sand/60 flex items-center justify-between">
+                        <span class="text-xs font-bold text-brand-dark">₹${s.price}</span>
+                        <button onclick="addToEnquiryCartSpare('${s.id}')" class="bg-brand-brown text-white text-[10px] font-bold px-2.5 py-1 rounded-lg hover:bg-brand-mahogany">Enquire</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterSpares(cat) {
+            currentSpareCategory = cat;
+            document.querySelectorAll('.spare-tab').forEach(t => {
+                t.classList.remove('bg-brand-brown', 'text-white');
+                t.classList.add('bg-brand-beige', 'text-brand-dark');
+            });
+            event.target.classList.remove('bg-brand-beige', 'text-brand-dark');
+            event.target.classList.add('bg-brand-brown', 'text-white');
+            renderSpares();
+        }
+
+        function renderReviews() {
+            const grid = document.getElementById('reviews-grid');
+            grid.innerHTML = reviews.map(r => `
+                <div class="bg-white p-6 rounded-2xl border border-brand-sand shadow-sm space-y-3 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-amber-500 text-xs">
+                                ${'<i class="fas fa-star"></i>'.repeat(r.rating)}
+                            </span>
+                            <span class="text-[10px] text-stone-400">${r.date || 'Verified Customer'}</span>
+                        </div>
+                        <p class="text-xs text-stone-600 italic leading-relaxed">"${r.text}"</p>
+                    </div>
+                    <div class="border-t border-brand-sand/60 pt-3 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-brand-sand/50 text-brand-brown font-bold text-xs flex items-center justify-center">
+                            ${r.author.charAt(0)}
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-brand-dark">${r.author}</p>
+                            <p class="text-[10px] text-brand-brown font-medium">Bought: ${r.product}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- ENQUIRY / CART FUNCTIONS ---
+
+        function addToEnquiryCart(prodId) {
+            const p = products.find(x => x.id === prodId);
+            if (!p) return;
+            cartEnquiries.push({ type: 'Machine', id: p.id, name: p.title, model: p.model, price: p.price });
+            updateCartBadge();
+            showToast('Added to Enquiry List', `${p.title} added to your booking list.`);
+        }
+
+        function addToEnquiryCartSpare(spareId) {
+            const s = spares.find(x => x.id === spareId);
+            if (!s) return;
+            cartEnquiries.push({ type: 'Spare Part', id: s.id, name: s.name, model: s.category, price: s.price });
+            updateCartBadge();
+            showToast('Added Spare Part', `${s.name} added to enquiry list.`);
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            badge.innerText = cartEnquiries.length;
+            if (cartEnquiries.length > 0) badge.classList.remove('hidden');
+            else badge.classList.add('hidden');
+        }
+
+        function toggleInquiryModal() {
+            const modal = document.getElementById('inquiry-modal');
+            modal.classList.toggle('hidden');
+            renderCartItems();
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('inquiry-cart-list');
+            if (cartEnquiries.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-8">Your enquiry list is currently empty.</p>`;
+                return;
+            }
+
+            container.innerHTML = cartEnquiries.map((item, idx) => `
+                <div class="bg-white border border-brand-sand p-3 rounded-xl flex items-center justify-between text-xs">
+                    <div>
+                        <span class="text-[9px] font-bold bg-brand-sand/40 text-brand-brown px-1.5 py-0.5 rounded">${item.type}</span>
+                        <p class="font-bold text-brand-dark mt-1">${item.name}</p>
+                        <p class="text-[10px] text-stone-500">Price Quote: ₹${item.price.toLocaleString()}</p>
+                    </div>
+                    <button onclick="removeFromCart(${idx})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function removeFromCart(idx) {
+            cartEnquiries.splice(idx, 1);
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        function submitCartEnquiry() {
+            if (cartEnquiries.length === 0) return;
+            const itemsSummary = cartEnquiries.map(c => `${c.name} (₹${c.price})`).join(', ');
+            enquiries.push({
+                id: 'e' + Date.now(),
+                name: 'Guest Customer',
+                phone: 'Inquired via Cart',
+                item: itemsSummary,
+                date: new Date().toISOString().split('T')[0],
+                status: 'Pending'
+            });
+            cartEnquiries = [];
+            updateCartBadge();
+            saveToStorage();
+            toggleInquiryModal();
+            showToast('Enquiry Submitted!', 'Our sales desk will call or WhatsApp you shortly.');
+        }
+
+        function quickEnquire(offerTitle) {
+            enquiries.push({
+                id: 'e' + Date.now(),
+                name: 'Offer Claimer',
+                phone: 'Claimed Online',
+                item: offerTitle,
+                date: new Date().toISOString().split('T')[0],
+                status: 'Pending'
+            });
+            saveToStorage();
+            showToast('Offer Claimed!', `You have inquired for ${offerTitle}. Manager notified.`);
+        }
+
+        // --- PRODUCT DETAIL MODAL ---
+
+        function openProductModal(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+
+            const modalImg = document.getElementById('modal-img');
+            modalImg.src = p.img;
+            modalImg.onerror = function() {
+                this.onerror = null;
+                this.src = 'https://placehold.co/800x600/F4EFE6/8C6D53?text=Machine+Specification';
+            };
+            document.getElementById('modal-brand').innerText = p.brand;
+            document.getElementById('modal-model').innerText = p.model;
+            document.getElementById('modal-cat-badge').innerText = p.category;
+            document.getElementById('modal-title').innerText = p.title;
+            document.getElementById('modal-price').innerText = `₹${p.price.toLocaleString()}`;
+            document.getElementById('modal-old-price').innerText = p.oldPrice ? `₹${p.oldPrice.toLocaleString()}` : '';
+            document.getElementById('modal-discount').innerText = p.oldPrice ? `${Math.round(((p.oldPrice - p.price)/p.oldPrice)*100)}% OFF` : 'Best Price';
+            document.getElementById('modal-desc').innerText = p.desc;
+
+            document.getElementById('modal-inquire-btn').onclick = () => {
+                addToEnquiryCart(p.id);
+                closeProductModal();
+                toggleInquiryModal();
+            };
+
+            document.getElementById('modal-wa-btn').href = `https://wa.me/919876543210?text=Hello%20Sahana%20Sewing,%20I%20am%20interested%20in%20buying%20${encodeURIComponent(p.title)}%20(${p.model})`;
+
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        // --- SERVICE BOOKING & REVIEWS SUBMISSION ---
+
+        function handleServiceSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('srv-name').value;
+            const phone = document.getElementById('srv-phone').value;
+            const machine = document.getElementById('srv-machine').value;
+            const issue = document.getElementById('srv-issue').value;
+            const date = document.getElementById('srv-date').value;
+            const type = document.getElementById('srv-type').value;
+
+            serviceBookings.push({
+                id: 'r' + Date.now(),
+                name, phone, machine, issue, date, type, status: 'Pending'
+            });
+
+            saveToStorage();
+            document.getElementById('service-booking-form').reset();
+            showToast('Service Booked!', 'Technician has been assigned. We will contact you.');
+        }
+
+        function toggleReviewModal() {
+            document.getElementById('review-modal').classList.toggle('hidden');
+        }
+
+        function handleReviewSubmit(e) {
+            e.preventDefault();
+            const author = document.getElementById('rev-author').value;
+            const product = document.getElementById('rev-product').value;
+            const rating = parseInt(document.getElementById('rev-rating').value);
+            const text = document.getElementById('rev-text').value;
+
+            reviews.unshift({ author, product, rating, text, date: 'Just Now' });
+            saveToStorage();
+            renderReviews();
+            toggleReviewModal();
+            document.getElementById('write-review-form').reset();
+            showToast('Review Published!', 'Thank you for rating Sahana Sewing System.');
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            showToast('Message Sent!', 'Store Manager received your direct message.');
+            document.getElementById('contact-form').reset();
+        }
+
+        // --- OWNER PORTAL & DASHBOARD MANAGEMENT ---
+
+        function openOwnerPortal() {
+            if (ownerSessionActive) {
+                openDashboardModal();
+            } else {
+                document.getElementById('login-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        function handleOwnerLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('owner-pass-input').value;
+            if (pass === 'admin123') {
+                bypassLogin();
+            } else {
+                alert('Invalid Owner Passcode. Default is admin123');
+            }
+        }
+
+        function bypassLogin() {
+            ownerSessionActive = true;
+            closeLoginModal();
+            document.getElementById('portal-btn-text').innerText = 'Owner Dashboard';
+            openDashboardModal();
+            showToast('Owner Verified', 'Access granted to confidential financials.');
+        }
+
+        function logoutOwner() {
+            ownerSessionActive = false;
+            document.getElementById('portal-btn-text').innerText = 'Owner Portal';
+            closeDashboardModal();
+            showToast('Logged Out', 'Returned to public customer view.');
+        }
+
+        function openDashboardModal() {
+            document.getElementById('dashboard-modal').classList.remove('hidden');
+            renderDashboardKPIs();
+            renderOwnerProductsTable();
+            renderOwnerEnquiriesAndRepairs();
+            initCharts();
+        }
+
+        function closeDashboardModal() {
+            document.getElementById('dashboard-modal').classList.add('hidden');
+        }
+
+        function renderDashboardKPIs() {
+            const totalMachineStock = products.reduce((acc, p) => acc + parseInt(p.stock), 0);
+            const totalSpareStock = spares.reduce((acc, s) => acc + parseInt(s.stock), 0);
+            
+            // Calculate Financials (Estimated Sales from inventory)
+            const totalRev = products.reduce((acc, p) => acc + (p.price * 3), 145000); // Dummy accumulated revenue
+            const totalCost = products.reduce((acc, p) => acc + (p.costPrice * 3), 110000);
+            const netProfit = totalRev - totalCost;
+
+            const lowStockCount = products.filter(p => p.stock < 5).length + spares.filter(s => s.stock < 15).length;
+
+            document.getElementById('kpi-machine-stock').innerText = totalMachineStock;
+            document.getElementById('kpi-spare-stock').innerText = totalSpareStock;
+            document.getElementById('kpi-revenue').innerText = `₹${totalRev.toLocaleString()}`;
+            document.getElementById('kpi-profit').innerText = `₹${netProfit.toLocaleString()}`;
+            document.getElementById('kpi-enquiries').innerText = enquiries.filter(e => e.status === 'Pending').length;
+            document.getElementById('kpi-repairs').innerText = serviceBookings.filter(r => r.status === 'Pending').length;
+            document.getElementById('kpi-lowstock').innerText = lowStockCount;
+        }
+
+        function renderOwnerProductsTable() {
+            const tbody = document.getElementById('owner-products-tbody');
+            
+            tbody.innerHTML = products.map(p => {
+                const margin = p.price - p.costPrice;
+                return `
+                    <tr class="hover:bg-stone-900/50">
+                        <td class="py-3 px-4 font-bold text-white flex items-center gap-2">
+                            <img src="${p.img}" class="w-8 h-8 rounded object-cover">
+                            <span class="line-clamp-1">${p.title}</span>
+                        </td>
+                        <td class="py-3 px-4 text-stone-300">${p.brand} (${p.model})</td>
+                        <td class="py-3 px-4 text-stone-400">${p.category}</td>
+                        <td class="py-3 px-4 font-bold ${p.stock < 5 ? 'text-rose-400' : 'text-emerald-400'}">${p.stock} units</td>
+                        <td class="py-3 px-4 text-stone-400">₹${p.costPrice.toLocaleString()}</td>
+                        <td class="py-3 px-4 text-brand-gold font-bold">₹${p.price.toLocaleString()}</td>
+                        <td class="py-3 px-4 text-emerald-400 font-bold">+₹${margin.toLocaleString()}</td>
+                        <td class="py-3 px-4 text-right space-x-2">
+                            <button onclick="editProduct('${p.id}')" class="text-sky-400 hover:text-sky-300 p-1"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteProduct('${p.id}')" class="text-rose-400 hover:text-rose-300 p-1"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderOwnerEnquiriesAndRepairs() {
+            const enqBody = document.getElementById('owner-enquiries-tbody');
+            enqBody.innerHTML = enquiries.map((e, idx) => `
+                <tr>
+                    <td class="py-2 px-3 font-bold text-white">${e.name}<br><span class="text-[10px] text-stone-400">${e.phone}</span></td>
+                    <td class="py-2 px-3 text-stone-300 line-clamp-1">${e.item}</td>
+                    <td class="py-2 px-3"><span class="text-[10px] px-2 py-0.5 rounded ${e.status === 'Pending' ? 'bg-amber-900/60 text-amber-300' : 'bg-emerald-900/60 text-emerald-300'}">${e.status}</span></td>
+                    <td class="py-2 px-3 text-right">
+                        <button onclick="toggleEnquiryStatus(${idx})" class="text-xs text-brand-gold hover:underline">Toggle</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            const repBody = document.getElementById('owner-repairs-tbody');
+            repBody.innerHTML = serviceBookings.map((r, idx) => `
+                <tr>
+                    <td class="py-2 px-3 font-bold text-white">${r.name}<br><span class="text-[10px] text-stone-400">${r.phone}</span></td>
+                    <td class="py-2 px-3 text-stone-300">${r.machine}<br><span class="text-[10px] text-stone-500">${r.issue}</span></td>
+                    <td class="py-2 px-3 text-stone-400">${r.date}</td>
+                    <td class="py-2 px-3 text-right">
+                        <button onclick="toggleRepairStatus(${idx})" class="text-xs text-sky-400 hover:underline">Toggle</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleEnquiryStatus(idx) {
+            enquiries[idx].status = enquiries[idx].status === 'Pending' ? 'Resolved' : 'Pending';
+            saveToStorage();
+            renderOwnerEnquiriesAndRepairs();
+            renderDashboardKPIs();
+        }
+
+        function toggleRepairStatus(idx) {
+            serviceBookings[idx].status = serviceBookings[idx].status === 'Pending' ? 'Completed' : 'Pending';
+            saveToStorage();
+            renderOwnerEnquiriesAndRepairs();
+            renderDashboardKPIs();
+        }
+
+        // --- CRUD OPERATIONS FOR OWNER ---
+
+        function openAddProductModal() {
+            document.getElementById('add-product-form').reset();
+            document.getElementById('edit-prod-id').value = '';
+            document.getElementById('add-modal-title').innerText = 'Add New Machine to Catalog';
+            document.getElementById('add-product-modal').classList.remove('hidden');
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('add-product-modal').classList.add('hidden');
+        }
+
+        function editProduct(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+
+            document.getElementById('edit-prod-id').value = p.id;
+            document.getElementById('prod-form-title').value = p.title;
+            document.getElementById('prod-form-brand').value = p.brand;
+            document.getElementById('prod-form-model').value = p.model;
+            document.getElementById('prod-form-cat').value = p.category;
+            document.getElementById('prod-form-cost').value = p.costPrice;
+            document.getElementById('prod-form-price').value = p.price;
+            document.getElementById('prod-form-stock').value = p.stock;
+            document.getElementById('prod-form-img').value = p.img;
+            document.getElementById('prod-form-desc').value = p.desc;
+
+            document.getElementById('add-modal-title').innerText = 'Edit Machine Details & Pricing';
+            document.getElementById('add-product-modal').classList.remove('hidden');
+        }
+
+        function handleSaveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-prod-id').value;
+            const title = document.getElementById('prod-form-title').value;
+            const brand = document.getElementById('prod-form-brand').value;
+            const model = document.getElementById('prod-form-model').value;
+            const category = document.getElementById('prod-form-cat').value;
+            const costPrice = parseFloat(document.getElementById('prod-form-cost').value);
+            const price = parseFloat(document.getElementById('prod-form-price').value);
+            const stock = parseInt(document.getElementById('prod-form-stock').value);
+            const img = document.getElementById('prod-form-img').value;
+            const desc = document.getElementById('prod-form-desc').value;
+
+            if (id) {
+                // Edit existing
+                const idx = products.findIndex(x => x.id === id);
+                if (idx !== -1) {
+                    products[idx] = { ...products[idx], title, brand, model, category, costPrice, price, stock, img, desc };
+                }
+            } else {
+                // Add new
+                products.push({
+                    id: 'p' + Date.now(),
+                    title, brand, model, category, costPrice, price, stock, img, desc,
+                    rating: 5.0, oldPrice: price + 2000
+                });
+            }
+
+            saveToStorage();
+            renderProducts();
+            renderOwnerProductsTable();
+            renderDashboardKPIs();
+            closeAddProductModal();
+            showToast('Inventory Updated', 'Product record saved successfully.');
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this machine from catalog?')) {
+                products = products.filter(p => p.id !== id);
+                saveToStorage();
+                renderProducts();
+                renderOwnerProductsTable();
+                renderDashboardKPIs();
+                showToast('Deleted', 'Item removed from inventory.');
+            }
+        }
+
+        // --- CHARTS INITIALIZATION (CHART.JS) ---
+
+        function initCharts() {
+            // Revenue Chart
+            const ctx1 = document.getElementById('revenueChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+                    datasets: [
+                        { label: 'Revenue (₹)', data: [120000, 150000, 180000, 210000, 195000, 240000], backgroundColor: '#C5A059' },
+                        { label: 'Profit (₹)', data: [30000, 42000, 48000, 58000, 50000, 65000], backgroundColor: '#10B981' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#d6d3d1', font: { size: 10 } } } },
+                    scales: {
+                        x: { ticks: { color: '#a8a29e' }, grid: { color: '#262626' } },
+                        y: { ticks: { color: '#a8a29e' }, grid: { color: '#262626' } }
+                    }
+                }
+            });
+
+            // Brand Breakdown Chart
+            const ctx2 = document.getElementById('brandChart').getContext('2d');
+            if (brandChartInstance) brandChartInstance.destroy();
+
+            const brandCounts = {};
+            products.forEach(p => {
+                brandCounts[p.brand] = (brandCounts[p.brand] || 0) + p.stock;
+            });
+
+            brandChartInstance = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(brandCounts),
+                    datasets: [{
+                        data: Object.values(brandCounts),
+                        backgroundColor: ['#C5A059', '#8C6D53', '#10B981', '#0EA5E9', '#F59E0B', '#EC4899']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: '#d6d3d1', font: { size: 10 } } } }
+                }
+            });
+        }
+
+        // --- HELPER UTILITIES ---
+
+        function handleNavSearch(query) {
+            document.getElementById('cat-search-input').value = query;
+            renderProducts();
+        }
+
+        function resetFilters() {
+            document.getElementById('cat-search-input').value = '';
+            document.getElementById('brand-filter').value = 'All';
+            document.getElementById('sort-filter').value = 'default';
+            filterCategory('All');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function showToast(title, msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('hidden', 'translate-x-full');
+            setTimeout(() => hideToast(), 4000);
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.add('translate-x-full');
+            setTimeout(() => document.getElementById('toast').classList.add('hidden'), 300);
+        }
+    </script>
+</body>
+</html>
